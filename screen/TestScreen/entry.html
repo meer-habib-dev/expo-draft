@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    <script>
+        let player; // Declare the player variable globally for access in other functions
+
+        window.onSpotifyWebPlaybackSDKReady = () => {
+            player = new Spotify.Player({
+                name: 'Expo Spotify Player',
+                getOAuthToken: cb => {
+                    cb("BQAi-3RLJHS3bCFaLzbM7crW1dP5c0FCOSSyAnsMeTH7_oi3Mqdp1bDwvaBWNEBhB00t8PSh52rFtG0YKxb5eUnwItGZZTpogZKRSTKnK9Jh8V4R3pU_mrbbSJG7Hkvr-frMFITM3yMwOXsG5OwnzJP-9e2K9VRHCcbU1ehlYaz69pZz--0dUDaBIvozJLSkCHAuzBRSemDJmUccACYSrpB-_1ovXUKVXAty22lG"); // Replace with your valid Spotify access token
+                },
+                volume: 0.5,
+            });
+
+            // Event listener for when the player is ready
+            player.addListener('ready', ({ device_id }) => {
+                console.log('Ready with Device ID:', device_id);
+                window.deviceId = device_id; // Save device ID globally
+            });
+
+            // Event listener for when the player becomes not ready
+            player.addListener('not_ready', ({ device_id }) => {
+                console.log('Device ID has gone offline:', device_id);
+            });
+
+            // Player state changes
+            player.addListener('player_state_changed', state => {
+                if (state) {
+                    console.log('Player state changed:', state);
+                }
+            });
+
+            // Connect the player
+            player.connect();
+        };
+
+        // Play a track function
+        const playMusic = () => {
+            if (window.deviceId) {
+                fetch(`https://api.spotify.com/v1/me/player/play?device_id=${window.deviceId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer BQDxWPzMOVRqIrDVQZeBg_mTqBS-Z8FM7nFK87r4eYdMpqlOTIt5q4qXBept2yFo04XRIRYhrYj2JXmLjK4fJvoMW85OqEfsUD2HSssZshuA9Ejqt1rXtw1Lu58gS3KzqwQCF-FDKWz6JG-7LnyJ_-lYvvcUFs5Eb9YYelcZ-Qgx62Eozn_dmYD8JPDM1RhGL7aDyjUkxiK25g0e99ifio97QV4IP1ttJWl835TL`, // Replace with your valid Spotify access token
+                    },
+                    body: JSON.stringify({
+                        uris: ['spotify:track:4uLU6hMCjMI75M1A2tKUQC'], // Replace with a valid Spotify track URI
+                    }),
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            console.log('Playback started!');
+                        } else {
+                            console.error('Error starting playback:', response);
+                        }
+                    })
+                    .catch(err => console.error('Fetch error:', err));
+            } else {
+                console.error('Device ID not ready yet.');
+            }
+        };
+    </script>
+</head>
+
+<body>
+    <p>Spotify Web Playback SDK Example</p>
+    <button onclick="playMusic()">Play Music</button>
+</body>
+
+</html>
