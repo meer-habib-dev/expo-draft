@@ -6,6 +6,7 @@ import {
   MusicKit,
   useCurrentSong,
   useIsPlaying,
+  ISong,
 } from "@lomray/react-native-apple-music";
 
 const AppleMusic = () => {
@@ -58,7 +59,7 @@ const AppleMusic = () => {
   }
 
   // Play a specific track
-  async function playTrack(track) {
+  async function playTrack(track: ISong) {
     if (!isAuthenticated) {
       Alert.alert("Not Authenticated", "Please authenticate first");
       return;
@@ -92,7 +93,7 @@ const AppleMusic = () => {
   };
   // Initial authentication on component mount
   useEffect(() => {
-    authenticate();
+    // authenticate();
   }, []);
 
   // Update current song when song changes
